@@ -3,7 +3,7 @@ import * as crypto from "crypto";
 
 const io = new Server(8080, {
     cors: {
-        origin: "http://127.0.0.1:5173",
+        origin: "http://localhost:5173",
     }
 });
 
@@ -49,6 +49,8 @@ io.on("connect", (socket) => {
 
         const userSession = session.get(socket.id);
 
+        socket.data.user = userSession;
+
         if(!io.sockets.adapter.rooms[sessionId]?.sockets[socket.id]) {
             socket.join(sessionId);
             io.to(sessionId).emit("event", {type: 'USER_JOIN', id: socket.id, user: userSession});
@@ -83,6 +85,6 @@ io.on("connect", (socket) => {
     });
 
     socket.on("disconnect", () => {
-        console.log(`disconnect ${socket.id}`);
+        console.log(`disconnect ${socket.id}`, socket.data);
     });
 });

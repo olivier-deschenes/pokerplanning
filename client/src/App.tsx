@@ -4,7 +4,7 @@ import { Session } from "./components/session/Session";
 
 function App() {
   return (
-    <div className={"w-screen h-screen bg-red-600"}>
+    <div className={"h-screen w-screen"}>
       <Routes>
         <Route index element={<Home />} />
         <Route path="session/:id" element={<Session />} />

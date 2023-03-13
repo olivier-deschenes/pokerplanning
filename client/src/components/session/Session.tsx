@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { socket } from "../../context/SessionContext";
 
 type SessionType = {
@@ -21,8 +21,10 @@ const leaveSession = (id: string) => {
 
 export function Session() {
   const { id } = useParams();
+  const [sessionId, setSessionId] = React.useState<string>("");
   const [session, setSession] = React.useState<SessionType | null>(null);
   const logRef = React.useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
 
   React.useEffect(() => {
     if (!id) return;
@@ -42,8 +44,6 @@ export function Session() {
     } else {
       console.log("no session");
     }
-
-    console.log(socket);
 
     joinSession(id, name, setSession);
 
@@ -69,10 +69,8 @@ export function Session() {
       }
     });
 
-    window.addEventListener("beforeunload", (ev) => {
-      alert("leaving");
-      ev.preventDefault();
-
+    console.log("onBeforeUnload");
+    window.addEventListener("beforeunload", () => {
       leaveSession(id);
     });
 
@@ -85,6 +83,17 @@ export function Session() {
 
   return (
     <div>
+      <div>
+        <input
+          type="text"
+          value={sessionId}
+          onChange={(e) => setSessionId(e.target.value)}
+          className="bg-slate-300"
+        />
+        <button onClick={() => navigate(`../session/${sessionId}`)}>
+          Go to
+        </button>
+      </div>
       <h1>Session</h1>
       <p>ID: {id}</p>
       <p>Session ID: {JSON.stringify(session)}</p>

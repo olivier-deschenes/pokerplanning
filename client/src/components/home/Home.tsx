@@ -54,9 +54,7 @@ export function Home() {
   });
 
   return (
-    <div
-      className={"flex h-full w-full items-center justify-center bg-blue-400"}
-    >
+    <div className={"flex h-full w-full items-center justify-center"}>
       <div>
         <form onSubmit={onSubmit}>
           <input {...register("name")} placeholder="Bill" />

@@ -29,7 +29,8 @@ export default function SessionContext({
 
   React.useEffect(() => {
     return () => {
-      //socket.disconnect();
+      socket.emit("leave", { id: "HEHE" });
+      socket.disconnect();
       console.log("disconnected");
     };
   }, []);
