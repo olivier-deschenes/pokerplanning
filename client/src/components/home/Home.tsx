@@ -1,10 +1,11 @@
 import * as React from "react";
-import { useForm, Resolver } from "react-hook-form";
+import { useForm, Resolver, useFieldArray } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { socket, useSessionContext } from "../../context/SessionContext";
 
 type FormValues = {
   name: string;
+  features: { text: string }[];
 };
 
 const resolver: Resolver<FormValues> = async (values) => {
@@ -12,7 +13,7 @@ const resolver: Resolver<FormValues> = async (values) => {
     values: values.name ? values : {},
     errors: !values.name
       ? {
-          firstName: {
+          name: {
             type: "required",
             message: "This is required.",
           },
@@ -28,8 +29,21 @@ export function Home() {
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
-  } = useForm<FormValues>({ resolver });
+    setFocus,
+  } = useForm<FormValues>({
+    resolver,
+    defaultValues: { features: [{ text: "" }] },
+  });
+
+  const { fields, append, prepend, remove, swap, move, insert } = useFieldArray(
+    {
+      name: "features",
+      control,
+    }
+  );
+
   const onSubmit = handleSubmit((data) => {
     socket.emit("add_session", { name: data.name }, (resp: any) => {
       console.log(resp);
@@ -58,8 +72,29 @@ export function Home() {
       <div>
         <form onSubmit={onSubmit}>
           <input {...register("name")} placeholder="Bill" />
-          {errors?.name && <p>{errors.name.message}</p>}
-          <input type="submit" />
+          <div className={"flex flex-col bg-blue-300"}>
+            {fields.map((field, index: number) => (
+              <input
+                key={field.id}
+                {...register(`features.${index}.text` as const)}
+                className={"bg-red-300"}
+              />
+            ))}
+            <button
+              onClick={() => {
+                append(
+                  { text: "" },
+                  {
+                    focusName: `features.${fields.length - 1}.text`,
+                    shouldFocus: true,
+                  }
+                );
+              }}
+            >
+              Add Feature
+            </button>
+          </div>
+          <input type="button" />
         </form>
       </div>
     </div>
